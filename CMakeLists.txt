@@ -519,6 +519,8 @@ if(${IREE_BUILD_PYTHON_BINDINGS})
   add_subdirectory(bindings/python)
 endif()
 
+  add_subdirectory(bindings/csharp)
+
 if(${IREE_BUILD_BINDINGS_TFLITE})
   add_subdirectory(bindings/tflite)
 endif()

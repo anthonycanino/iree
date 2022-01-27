@@ -1,0 +1,24 @@
+iree_cc_library(
+  NAME
+    csharp
+  HDRS
+    "base.h"
+    "hal.h"
+    "util.h"
+    "vm.h"
+  SRCS
+    "base.c"
+    "hal.c"
+    "util.c"
+    "vm.c"
+  DEPS
+    iree::base
+    iree::base::cc
+    iree::hal
+    iree::hal::drivers
+    iree::modules::hal
+    iree::vm
+    iree::vm::bytecode_module
+  SHARED
+)
+
