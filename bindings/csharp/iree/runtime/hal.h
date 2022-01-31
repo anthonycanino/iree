@@ -40,8 +40,6 @@ CSHARP_API_EXPORTED cs_iree_hal_allocator_t cs_iree_hal_device_allocator(cs_iree
 CSHARP_API_EXPORTED iree_status_t
 cs_iree_hal_module_create(cs_iree_hal_device_t device, cs_iree_allocator_t allocator, cs_iree_vm_module_t* out_module);
 
-CSHARP_API_EXPORTED iree_status_t cs_create_vmvx_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device);
-
 CSHARP_API_EXPORTED iree_status_t cs_iree_hal_buffer_view_allocate_buffer(
     cs_iree_hal_allocator_t allocator, const iree_hal_dim_t* shape,
     iree_host_size_t shape_rank, iree_hal_element_type_t element_type,
@@ -61,6 +59,12 @@ CSHARP_API_EXPORTED cs_iree_hal_buffer_t cs_iree_hal_buffer_view_buffer(cs_iree_
 CSHARP_API_EXPORTED iree_status_t cs_iree_hal_buffer_read_data(
     cs_iree_hal_buffer_t source_buffer, iree_device_size_t source_offset,
     void* target_buffer, iree_device_size_t data_length); 
+
+
+CSHARP_API_EXPORTED iree_status_t cs_create_vmvx_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device);
+
+CSHARP_API_EXPORTED iree_status_t cs_create_vulkan_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device);
+
 
 
 #ifdef __cplusplus

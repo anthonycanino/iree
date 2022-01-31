@@ -3,6 +3,7 @@
 #include "iree/modules/hal/module.h"
 
 #include "iree/hal/vmvx/registration/driver_module.h"
+#include "iree/hal/vulkan/registration/driver_module.h"
 
 iree_status_t cs_iree_hal_module_register_types(void) {
   return iree_hal_module_register_types();
@@ -22,27 +23,6 @@ cs_iree_hal_module_create(cs_iree_hal_device_t device, cs_iree_allocator_t alloc
   iree_allocator_t allocator_c = *allocator.allocator;
   iree_vm_module_t **out_module_c = &out_module->storage;
   return iree_hal_module_create(device_c, allocator_c, out_module_c);
-}
-
-iree_status_t cs_create_vmvx_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device) {
-  iree_allocator_t host_allocator_c = *host_allocator.allocator;
-  iree_hal_device_t **out_device_c = &out_device->storage;
-
-
-  IREE_RETURN_IF_ERROR(iree_hal_vmvx_driver_module_register(
-      iree_hal_driver_registry_default()));
-  // Create the hal driver from the name.
-  iree_hal_driver_t* driver = NULL;
-  iree_string_view_t identifier = iree_make_cstring_view("vmvx");
-  iree_status_t status = iree_hal_driver_registry_try_create_by_name(
-      iree_hal_driver_registry_default(), identifier, host_allocator_c, &driver);
-
-  if (iree_status_is_ok(status)) {
-    status = iree_hal_driver_create_default_device(driver, host_allocator_c, out_device_c);
-  }
-
-  iree_hal_driver_release(driver);
-  return iree_ok_status();
 }
 
 iree_status_t cs_iree_hal_buffer_view_allocate_buffer(
@@ -82,4 +62,48 @@ iree_status_t cs_iree_hal_buffer_read_data(
     void* target_buffer, iree_device_size_t data_length) {
   iree_hal_buffer_t *source_buffer_c = source_buffer.storage;
   return iree_hal_buffer_read_data(source_buffer_c, source_offset, target_buffer, data_length);
+}
+
+
+// Some non wrapper functions to handle a bit more leg work on the unmanaged side
+iree_status_t cs_create_vmvx_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device) {
+  iree_allocator_t host_allocator_c = *host_allocator.allocator;
+  iree_hal_device_t **out_device_c = &out_device->storage;
+
+
+  IREE_RETURN_IF_ERROR(iree_hal_vmvx_driver_module_register(
+      iree_hal_driver_registry_default()));
+  // Create the hal driver from the name.
+  iree_hal_driver_t* driver = NULL;
+  iree_string_view_t identifier = iree_make_cstring_view("vmvx");
+  iree_status_t status = iree_hal_driver_registry_try_create_by_name(
+      iree_hal_driver_registry_default(), identifier, host_allocator_c, &driver);
+
+  if (iree_status_is_ok(status)) {
+    status = iree_hal_driver_create_default_device(driver, host_allocator_c, out_device_c);
+  }
+
+  iree_hal_driver_release(driver);
+  return status;
+}
+
+iree_status_t cs_create_vulkan_device(cs_iree_allocator_t host_allocator, cs_iree_hal_device_t *out_device) {
+  iree_allocator_t host_allocator_c = *host_allocator.allocator;
+  iree_hal_device_t **out_device_c = &out_device->storage;
+
+
+  IREE_RETURN_IF_ERROR(iree_hal_vulkan_driver_module_register(
+      iree_hal_driver_registry_default()));
+  // Create the hal driver from the name.
+  iree_hal_driver_t* driver = NULL;
+  iree_string_view_t identifier = iree_make_cstring_view("vulkan");
+  iree_status_t status = iree_hal_driver_registry_try_create_by_name(
+      iree_hal_driver_registry_default(), identifier, host_allocator_c, &driver);
+
+  if (iree_status_is_ok(status)) {
+    status = iree_hal_driver_create_default_device(driver, host_allocator_c, out_device_c);
+  }
+
+  iree_hal_driver_release(driver);
+  return status;
 }
